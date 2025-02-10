@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contadores Medievales</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .character {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        .character h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .timer {
+            font-size: 28px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        button {
+            background: #ff6347;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #e64a23;
+        }
+        input[type="number"] {
+            padding: 5px;
+            font-size: 16px;
+            width: 80px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contadores de Tiempo Medieval</h1>
+    <div class="container">
+        <!-- Contador para Rutxe -->
+        <div class="character">
+            <h2>Rutxe</h2>
+            <div class="timer" id="rutxe-timer">00:00</div>
+            <input type="number" id="rutxe-minutes" placeholder="Minutos" min="1" max="60">
+            <button onclick="startTimer('rutxe')">Iniciar</button>
+            <button onclick="setTimer('rutxe', 5)">5 Minutos</button>
+            <button onclick="setTimer('rutxe', 10)">10 Minutos</button>
+        </div>
+
+        <!-- Contador para Peregrino -->
+        <div class="character">
+            <h2>Peregrino</h2>
+            <div class="timer" id="peregrino-timer">00:00</div>
+            <input type="number" id="peregrino-minutes" placeholder="Minutos" min="1" max="60">
+            <button onclick="startTimer('peregrino')">Iniciar</button>
+            <button onclick="setTimer('peregrino', 5)">5 Minutos</button>
+            <button onclick="setTimer('peregrino', 10)">10 Minutos</button>
+        </div>
+    </div>
+
+    <audio id="alarm-sound" src="https://notificationsounds.com/soundfiles/3b566e5c232d452c89196920a61c41ae/file.mp3" preload="auto"></audio>
+
+    <script>
+        let rutxeInterval, peregrinoInterval;
+
+        function startTimer(character) {
+            const minutesInput = document.getElementById(`${character}-minutes`);
+            const timerDisplay = document.getElementById(`${character}-timer`);
+
+            if (!minutesInput.value || minutesInput.value <= 0) return;
+
+            let totalSeconds = parseInt(minutesInput.value) * 60;
+            clearInterval(character === 'rutxe' ? rutxeInterval : peregrinoInterval);
+
+            function updateTimer() {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                totalSeconds--;
+
+                if (totalSeconds < 0) {
+                    clearInterval(character === 'rutxe' ? rutxeInterval : peregrinoInterval);
+                    timerDisplay.textContent = "00:00";
+                    playAlarm();
+                }
+            }
+
+            updateTimer();
+            if (character === 'rutxe') {
+                rutxeInterval = setInterval(updateTimer, 1000);
+            } else {
+                peregrinoInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function setTimer(character, minutes) {
+            document.getElementById(`${character}-minutes`).value = minutes;
+            startTimer(character);
+        }
+
+        function playAlarm() {
+            const alarmSound = document.getElementById('alarm-sound');
+            alarmSound.play();
+        }
+    </script>
+</body>
+</html>
