@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80') no-repeat center center fixed;
+            background: url('https://cdn.qwenlm.ai/output/50aa9710-70bb-4485-8ecf-f2c95b034f42/t2i/acf03259-159a-474e-8bf6-3f651765d989/40d1ac1a-19bb-4bd9-a79c-253c1da17a2e.png') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
             text-align: center;
@@ -72,7 +72,6 @@
             <button onclick="setTimer('rutxe', 5)">5 Minutos</button>
             <button onclick="setTimer('rutxe', 10)">10 Minutos</button>
         </div>
-
         <!-- Contador para Peregrino -->
         <div class="character">
             <h2>Peregrino</h2>
@@ -83,18 +82,21 @@
             <button onclick="setTimer('peregrino', 10)">10 Minutos</button>
         </div>
     </div>
-
     <audio id="alarm-sound" src="https://notificationsounds.com/soundfiles/3b566e5c232d452c89196920a61c41ae/file.mp3" preload="auto"></audio>
-
     <script>
         let rutxeInterval, peregrinoInterval;
+        let alarmSound;
+
+        function initializeAudio() {
+            alarmSound = document.getElementById('alarm-sound');
+            // Intenta cargar el sonido manualmente
+            alarmSound.load();
+        }
 
         function startTimer(character) {
             const minutesInput = document.getElementById(`${character}-minutes`);
             const timerDisplay = document.getElementById(`${character}-timer`);
-
             if (!minutesInput.value || minutesInput.value <= 0) return;
-
             let totalSeconds = parseInt(minutesInput.value) * 60;
             clearInterval(character === 'rutxe' ? rutxeInterval : peregrinoInterval);
 
@@ -103,7 +105,6 @@
                 const seconds = totalSeconds % 60;
                 timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 totalSeconds--;
-
                 if (totalSeconds < 0) {
                     clearInterval(character === 'rutxe' ? rutxeInterval : peregrinoInterval);
                     timerDisplay.textContent = "00:00";
@@ -125,9 +126,18 @@
         }
 
         function playAlarm() {
-            const alarmSound = document.getElementById('alarm-sound');
-            alarmSound.play();
+            if (alarmSound && !alarmSound.paused) {
+                // Si el sonido ya está reproduciéndose, detenerlo primero
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+            }
+            if (alarmSound) {
+                alarmSound.play();
+            }
         }
+
+        // Inicializa el audio cuando se carga la página
+        document.addEventListener("DOMContentLoaded", initializeAudio);
     </script>
 </body>
 </html>
